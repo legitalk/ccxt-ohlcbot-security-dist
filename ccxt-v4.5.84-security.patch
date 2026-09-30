@@ -1,0 +1,113 @@
+--- a/composer.json
++++ b/composer.json
+@@ -167,7 +167,7 @@
+         "fig/http-message-util": "1.1.5",
+         "guzzlehttp/psr7": "2.13.0",
+         "kornrunner/keccak": "1.1.0",
+-        "phpseclib/phpseclib": "2.0.55",
++        "phpseclib/phpseclib": "3.0.57",
+         "psr/http-factory": "1.1.0",
+         "psr/http-factory-implementation": "1.0.0",
+         "psr/http-message": "1.1",
+@@ -178,7 +178,7 @@
+         "react/cache": "1.2.0",
+         "react/dns": "1.14.0",
+         "react/event-loop": "1.6.0",
+-        "react/http": "1.11.0",
++        "react/http": "1.11.1",
+         "react/promise": "3.3.0",
+         "react/promise-timer": "1.11.0",
+         "react/socket": "1.17.0",
+--- a/php/Exchange.php
++++ b/php/Exchange.php
+@@ -40,7 +40,7 @@
+ use Elliptic\EC;
+ use Elliptic\EdDSA;
+ use BN\BN;
+-use phpseclib\File\ASN1;
++use phpseclib3\File\ASN1;
+ use Exception;
+ 
+ // import global functions so unqualified calls bind directly to the root
+@@ -1569,7 +1569,7 @@
+             $pemKey = $match[1];
+             // SEC1 ECPrivateKey ::= SEQUENCE { version INTEGER, privateKey OCTET STRING,
+             //   parameters [0] EXPLICIT ECParameters OPTIONAL, publicKey [1] EXPLICIT BIT STRING OPTIONAL }
+-            $decodedPemKey = (new ASN1())->decodeBER(base64_decode($pemKey))[0] ?? null;
++            $decodedPemKey = ASN1::decodeBER(base64_decode($pemKey))[0] ?? null;
+             if (!is_array($decodedPemKey) || $decodedPemKey['type'] !== ASN1::TYPE_SEQUENCE || !isset($decodedPemKey['content'][1]) || $decodedPemKey['content'][1]['type'] !== ASN1::TYPE_OCTET_STRING) {
+                 throw new Exception('Invalid EC private key');
+             }
+--- a/php/static_dependencies/web3.php/src/Utils.php
++++ b/php/static_dependencies/web3.php/src/Utils.php
+@@ -15,7 +15,7 @@
+ use InvalidArgumentException;
+ use stdClass;
+ use kornrunner\Keccak;
+-use phpseclib\Math\BigInteger as BigNumber;
++use phpseclib3\Math\BigInteger as BigNumber;
+ 
+ class Utils
+ {
+@@ -322,26 +322,8 @@
+             }
+             $whole = $whole->multiply($bnt);
+ 
+-            // There is no pow function in phpseclib 2.0, only can see in dev-master
+-            // Maybe implement own biginteger in the future
+-            // See 2.0 BigInteger: https://github.com/phpseclib/phpseclib/blob/2.0/phpseclib/Math/BigInteger.php
+-            // See dev-master BigInteger: https://github.com/phpseclib/phpseclib/blob/master/phpseclib/Math/BigInteger.php#L700
+-            // $base = (new BigNumber(10))->pow(new BigNumber($fractionLength));
+-
+-            // So we switch phpseclib special global param, change in the future
+-            switch (MATH_BIGINTEGER_MODE) {
+-                case $whole::MODE_GMP:
+-                    static $two;
+-                    $powerBase = gmp_pow(gmp_init(10), (int) $fractionLength);
+-                    break;
+-                case $whole::MODE_BCMATH:
+-                    $powerBase = bcpow('10', (string) $fractionLength, 0);
+-                    break;
+-                default:
+-                    $powerBase = pow(10, (int) $fractionLength);
+-                    break;
+-            }
+-            $base = new BigNumber($powerBase);
++            // Decimal scale is independent of the phpseclib BigInteger backend.
++            $base = new BigNumber('1' . str_repeat('0', (int) $fractionLength));
+             $fraction = $fraction->multiply($bnt)->divide($base)[0];
+ 
+             if ($negative1 !== false) {
+--- a/php/static_dependencies/starknet.php/src/Utils.php
++++ b/php/static_dependencies/starknet.php/src/Utils.php
+@@ -15,7 +15,7 @@
+ use InvalidArgumentException;
+ use stdClass;
+ use kornrunner\Keccak;
+-use phpseclib\Math\BigInteger as BigNumber;
++use phpseclib3\Math\BigInteger as BigNumber;
+ use BN\BN;
+ 
+ class Utils
+--- a/php/static_dependencies/starknet.php/src/Cairo/Felt.php
++++ b/php/static_dependencies/starknet.php/src/Cairo/Felt.php
+@@ -11,7 +11,7 @@
+ namespace StarkNet\Cairo;
+ 
+ use InvalidArgumentException;
+-use phpseclib\Math\BigInteger as BigNumber;
++use phpseclib3\Math\BigInteger as BigNumber;
+ use StarkNet\Utils;
+ use StarkNet\Constants;
+ 
+--- a/php/static_dependencies/starknet.php/src/Poseidon.php
++++ b/php/static_dependencies/starknet.php/src/Poseidon.php
+@@ -13,7 +13,7 @@
+ 
+ use StarkNet\Utils;
+ use StarkNet\Constants;
+-use phpseclib\Math\BigInteger;
++use phpseclib3\Math\BigInteger;
+ 
+ class Poseidon
+ {

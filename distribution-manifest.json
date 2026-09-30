@@ -1,0 +1,21 @@
+{
+  "archive_content_delta": "Exact official source ZIP entries retained, including symlinks and internal composer.lock; only the six named patch files differ in bytes.",
+  "assets": {
+    "ccxt-4.5.84-ohlcbot-security-v2.zip": {
+      "bytes": 91974596,
+      "sha256": "e41ac31c76f416e7a34ebe05054c07c527e45cc1479fd1f2c7a49a34bbc644de"
+    },
+    "ccxt-v4.5.84-security.patch": {
+      "bytes": 4375,
+      "sha256": "6b15c2fad03a852e43e71cc83cf96bc314c3b2b59191aaafd58e357e628d0936"
+    }
+  },
+  "license": "MIT; original LICENSE.txt included in archive",
+  "modification": "six-file security compatibility patch; NOT an unchanged upstream release",
+  "schema": "ohlcbot-ccxt-modified-distribution.v2",
+  "upstream_commit": "ec2f789b61dfaf647e4397f1bff31267e521ca72",
+  "upstream_composer_json_sha256": "a59454816403b7ecc1521ab3a91b7ace215a733980f2b88d885976ec7d1555ad",
+  "upstream_package": "ccxt/ccxt",
+  "upstream_source_zip_sha256": "2390a2c6aaaddd665d7d58653fef9ff2756b38f0f6e282dc0e5bc5a8aa4889f1",
+  "upstream_version": "4.5.84"
+}
